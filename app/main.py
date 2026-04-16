@@ -17,6 +17,11 @@ from app.config import settings
 from app.handlers import setup_routers
 from app.middlewares import setup_middlewares
 from app.database import db
+from app.services.followup_scheduler import FollowupScheduler
+
+
+# Ссылка на запущенный планировщик follow-up-ов (создаётся в on_startup)
+_scheduler: FollowupScheduler | None = None
 
 
 async def check_local_api_available() -> bool:
@@ -83,6 +88,7 @@ async def setup_bot() -> tuple[Bot, Dispatcher]:
 
 async def on_startup(bot: Bot) -> None:
     """Действия при запуске бота"""
+    global _scheduler
     # Инициализируем базу данных
     try:
         await db.create_tables()
@@ -91,7 +97,11 @@ async def on_startup(bot: Bot) -> None:
     except Exception as e:
         logger.error(f"❌ Failed to initialize database: {e}")
         sys.exit(1)
-    
+
+    # Запускаем планировщик follow-up-сообщений
+    _scheduler = FollowupScheduler(bot)
+    await _scheduler.start()
+
     bot_info = await bot.get_me()
     logger.info(f"🚀 Bot @{bot_info.username} started successfully!")
     logger.info(f"🏠 Environment: {settings.env}")
@@ -100,7 +110,10 @@ async def on_startup(bot: Bot) -> None:
 
 async def on_shutdown(bot: Bot) -> None:
     """Действия при остановке бота"""
+    global _scheduler
     logger.info("🛑 Bot is shutting down...")
+    if _scheduler is not None:
+        await _scheduler.stop()
     await bot.session.close()
 
 

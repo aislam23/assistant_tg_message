@@ -3,6 +3,23 @@
 """
 
 from .database import db
-from .models import User, BotStats, MigrationHistory
+from .models import (
+    User,
+    BotStats,
+    MigrationHistory,
+    BusinessConnection,
+    Conversation,
+    Message,
+    UserKnowledgeText,
+)
 
-__all__ = ['db', 'User', 'BotStats', 'MigrationHistory']
+__all__ = [
+    'db',
+    'User',
+    'BotStats',
+    'MigrationHistory',
+    'BusinessConnection',
+    'Conversation',
+    'Message',
+    'UserKnowledgeText',
+]

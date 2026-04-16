@@ -43,6 +43,33 @@ class Settings(BaseSettings):
     local_api_host: str = Field("telegram-bot-api", alias="LOCAL_API_HOST")
     local_api_port: int = Field(8081, alias="LOCAL_API_PORT")
 
+    # AI providers (Telegram Business mode)
+    anthropic_api_key: str = Field("", alias="ANTHROPIC_API_KEY")
+    claude_model: str = Field("claude-sonnet-4-5-20250929", alias="CLAUDE_MODEL")
+    deepseek_api_key: str = Field("", alias="DEEPSEEK_API_KEY")
+    deepseek_base_url: str = Field("https://api.deepseek.com", alias="DEEPSEEK_BASE_URL")
+    enable_prompt_cache: bool = Field(True, alias="ENABLE_PROMPT_CACHE")
+
+    # Контекст-бюджет
+    max_context_tokens: int = Field(100000, alias="MAX_CONTEXT_TOKENS")
+    max_knowledge_tokens: int = Field(50000, alias="MAX_KNOWLEDGE_TOKENS")
+    max_history_messages: int = Field(20, alias="MAX_HISTORY_MESSAGES")
+    context_reserve_tokens: int = Field(4096, alias="CONTEXT_RESERVE_TOKENS")
+
+    # Имитация живого ответа
+    human_response_enabled: bool = Field(True, alias="HUMAN_RESPONSE_ENABLED")
+    min_response_delay: float = Field(15.0, alias="MIN_RESPONSE_DELAY")
+    max_response_delay: float = Field(25.0, alias="MAX_RESPONSE_DELAY")
+    typing_chars_per_second: float = Field(40.0, alias="TYPING_CHARS_PER_SECOND")
+    typing_min_duration: float = Field(3.0, alias="TYPING_MIN_DURATION")
+    typing_max_duration: float = Field(60.0, alias="TYPING_MAX_DURATION")
+
+    # Follow-up планировщик
+    followup_enabled: bool = Field(True, alias="FOLLOWUP_ENABLED")
+    followup_check_interval: int = Field(60, alias="FOLLOWUP_CHECK_INTERVAL")
+    followup_delay_minutes: int = Field(60, alias="FOLLOWUP_DELAY_MINUTES")
+    followup_max_count: int = Field(1, alias="FOLLOWUP_MAX_COUNT")
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
