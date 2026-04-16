@@ -1,464 +1,384 @@
 # 🤖 assistant_tg_message
 
-> Бот для управления личкой в Telegram.
+> Telegram-бот, который отвечает клиентам в вашей личке **от вашего имени** через AI, имитируя живое общение.
 
+Подключается к вашему Telegram-аккаунту через **Telegram Business** и автоматически отвечает на сообщения клиентов, используя Claude (или DeepSeek). Буферизирует несколько подряд идущих сообщений в один ответ, добавляет случайную задержку, показывает «печатает...» и напоминает о себе через follow-up, если клиент не отвечает.
 
-Профессиональный стартовый шаблон для создания Telegram ботов на **Aiogram v3.20.0** с Docker контейнеризацией.
-
-## ✨ Особенности
-
-- 🐳 **Docker** - полная контейнеризация для разработки и продакшена
-- 🚀 **Aiogram v3.20.0** - последняя версия фреймворка
-- 🗄️ **PostgreSQL** - надежная база данных с SQLAlchemy
-- 📦 **Redis** - быстрое хранилище состояний
-- 👨‍💼 **Админская панель** - управление ботом и рассылки
-- 📊 **Статистика** - мониторинг пользователей и активности
-- 📤 **Система рассылок** - массовая отправка с прогрессом
-- 📝 **Логирование** - красивые логи с Loguru
-- 🔧 **Pydantic** - валидация конфигурации
-- 🛠️ **Makefile** - удобные команды для управления
-- 🎯 **Интерактивная настройка** - мастер setup за 2 минуты
-- 🔒 **Безопасность** - запуск от непривилегированного пользователя
-
-## 🚀 Быстрый старт
-
-### 🎯 Новый проект за 2 минуты (рекомендуется!)
-
-```bash
-# Клонируем шаблон и запускаем интерактивную настройку
-git clone git@github.com:aislam23/aiogram_starter_kit.git my_awesome_bot
-cd my_awesome_bot
-make init-project  # 🚀 Интерактивный мастер настройки
-make dev-d         # Запуск готового бота
-```
-
-### 🤖 Настройка компьютера с помощью нейронки
-
-Если на вашем компьютере ещё не установлены необходимые программы, скопируйте промпт ниже и отправьте его в ChatGPT, Claude или другую нейронку. Она определит вашу ОС и установит всё, что нужно.
-
-<details>
-<summary>📋 Нажмите, чтобы раскрыть промпт</summary>
-
-```text
-Мне нужно подготовить компьютер к разработке Telegram-бота на базе шаблона Aiogram Starter Kit.
-Определи мою операционную систему и установи всё необходимое.
-
-## Обязательные программы
-
-1. **Git** — система контроля версий. Нужна для клонирования шаблона и работы с репозиторием.
-2. **Docker Desktop** (включает Docker Engine и Docker Compose) — все сервисы проекта (бот, PostgreSQL, Redis) запускаются в контейнерах. Без Docker ничего не работает.
-3. **Python 3.11+** — нужен для запуска скрипта интерактивной настройки проекта (scripts/init_project.py).
-
-## Рекомендуемые программы
-
-4. **Just** (command runner) — кроссплатформенная альтернатива Make. Удобнее на Windows, где Make не предустановлен. На macOS/Linux можно использовать Make, который уже есть в системе.
-5. **GitHub CLI (gh)** — позволяет создать GitHub-репозиторий прямо из терминала во время настройки проекта. Без него репозиторий нужно будет создать вручную на сайте.
-
-## Инструкции по установке
-
-### macOS
-- Git: обычно уже установлен. Проверь: `git --version`. Если нет — установится при первом вызове или через `brew install git`.
-- Docker Desktop: скачать с https://docs.docker.com/desktop/setup/install/mac-install/ или `brew install --cask docker`. После установки — запустить Docker Desktop и дождаться, пока иконка в трее перестанет анимироваться.
-- Python: `brew install python@3.11` или скачать с https://www.python.org/downloads/
-- Just: `brew install just`
-- GitHub CLI: `brew install gh`
-
-### Windows
-- Git: скачать с https://git-scm.com/downloads/win или `winget install Git.Git`
-- Docker Desktop: скачать с https://docs.docker.com/desktop/setup/install/windows-install/ или `winget install Docker.DockerDesktop`. После установки — перезагрузить компьютер и запустить Docker Desktop.
-- Python: скачать с https://www.python.org/downloads/ (при установке обязательно поставить галочку "Add Python to PATH") или `winget install Python.Python.3.11`
-- Just: `winget install Casey.Just`
-- GitHub CLI: `winget install GitHub.cli`
-
-### Linux (Ubuntu/Debian)
-- Git: `sudo apt update && sudo apt install -y git`
-- Docker: установить по официальной инструкции https://docs.docker.com/engine/install/ubuntu/, затем `sudo apt install -y docker-compose-plugin`. Добавить пользователя в группу docker: `sudo usermod -aG docker $USER` и перелогиниться.
-- Python: `sudo apt install -y python3 python3-pip`
-- Just: `curl -q 'https://proget.makedeb.org/debian-feeds/prebuilt-mpr.pub' | gpg --dearmor | sudo tee /usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg > /dev/null && echo "deb [signed-by=/usr/share/keyrings/prebuilt-mpr-archive-keyring.gpg] https://proget.makedeb.org prebuilt-mpr $(lsb_release -cs)" | sudo tee /etc/apt/sources.list.d/prebuilt-mpr.list && sudo apt update && sudo apt install -y just`
-- GitHub CLI: смотри https://github.com/cli/cli/blob/trunk/docs/install_linux.md
-
-## После установки
-
-Проверь, что всё работает, выполнив эти команды в терминале:
-```
-git --version
-docker --version
-docker compose version
-python3 --version
-```
-
-Если все четыре команды вернули версии без ошибок — компьютер готов.
-
-Далее я склонирую и настрою проект:
-```
-git clone git@github.com:aislam23/aiogram_starter_kit.git my_awesome_bot
-cd my_awesome_bot
-make init-project
-```
-```
-
-</details>
-
-**Готово!** 🎉 Интерактивный мастер:
-- Соберет информацию о боте (токен, username, описание)
-- Настроит все конфигурационные файлы
-- Обновит порты при конфликтах
-- Инициализирует новый Git репозиторий
-- Покажет следующие шаги
-
-### ✅ Быстрый чек-лист
-
-**Обязательно:**
-- [ ] BOT_TOKEN от @BotFather
-- [ ] BOT_USERNAME вашего бота
-- [ ] ADMIN_USER_IDS (ваш Telegram ID для админки)
-
-**Рекомендуется (автоматически через `make init-project`):**
-- [ ] Уникальное название проекта
-- [ ] Безопасные пароли для БД
-- [ ] Свободные порты (если стандартные заняты)
-- [ ] Новый Git репозиторий
-
-**Результат:**
-- [ ] Бот отвечает на `/start`, `/help`, `/admin`
-- [ ] Админская панель работает (команда `/admin`)
-- [ ] Логи показывают успешный запуск
-- [ ] База данных инициализирована
-
-## 👨‍💼 Админская панель
-
-### Возможности админа
-
-- **📊 Статистика бота**: количество пользователей, статус, время запуска
-- **📤 Система рассылок**: отправка сообщений любого типа всем пользователям
-- **🔗 Кнопки в рассылках**: добавление inline кнопок с ссылками
-- **📈 Прогресс рассылки**: отслеживание процесса отправки в реальном времени
-- **📋 Итоговая статистика**: количество доставленных сообщений
-
-### Настройка админов
-
-В файле `.env` укажите ID администраторов:
-
-```env
-# Список админов (JSON массив или через запятую)
-ADMIN_USER_IDS=[123456789, 987654321]
-# или
-ADMIN_USER_IDS=123456789,987654321
-```
-
-### Как использовать
-
-1. **Команда `/admin`** - открывает админскую панель со статистикой
-2. **Кнопка "Рассылка"** - запускает мастер создания рассылки
-3. **Отправьте сообщение** любого типа (текст, фото, видео, документ)
-4. **Добавьте кнопку** (опционально) в формате: `Текст кнопки | https://example.com`
-5. **Подтвердите отправку** - начнется рассылка с показом прогресса
-6. **Получите статистику** - количество доставленных сообщений
-
-### Поддерживаемые типы сообщений
-
-- ✅ Текстовые сообщения
-- ✅ Фотографии с подписями
-- ✅ Видео с подписями
-- ✅ Документы с подписями
-- ✅ Аудио с подписями
-- ✅ Голосовые сообщения
-- ✅ Видео-заметки
-- ✅ GIF анимации
-- ✅ Стикеры
-
-## 📁 Структура проекта
-
-```
-aiogram_starter_kit/
-├── app/                          # Код приложения
-│   ├── handlers/                 # Обработчики команд
-│   │   ├── admin/               # Админские хендлеры
-│   │   │   ├── __init__.py      # Инициализация
-│   │   │   ├── admin.py         # Команда /admin и рассылки
-│   │   │   └── api_settings.py  # Настройки Local Bot API
-│   │   ├── start.py             # Команда /start
-│   │   └── help.py              # Команды /help, /status
-│   ├── middlewares/             # Промежуточное ПО
-│   │   ├── logging.py           # Логирование запросов
-│   │   └── user.py              # Автосохранение пользователей
-│   ├── database/                # Работа с БД
-│   │   ├── models.py            # SQLAlchemy модели
-│   │   ├── database.py          # Класс для работы с БД
-│   │   └── __init__.py          # Инициализация
-│   ├── keyboards/               # Клавиатуры
-│   │   ├── admin.py             # Админские клавиатуры
-│   │   └── __init__.py          # Инициализация
-│   ├── services/                # Сервисы
-│   │   ├── broadcast.py         # Сервис рассылок
-│   │   └── __init__.py          # Инициализация
-│   ├── states/                  # FSM состояния
-│   │   ├── admin.py             # Состояния админки
-│   │   └── __init__.py          # Инициализация
-│   ├── utils/                   # Утилиты
-│   ├── main.py                  # Главный файл бота
-│   └── config.py                # Конфигурация
-├── scripts/                     # Скрипты
-│   ├── init-project.sh          # Интерактивная настройка
-│   ├── init.sql                 # Инициализация БД
-│   └── clean-macos.sh           # Очистка macOS файлов
-├── docker-compose.yml           # Разработка
-├── docker-compose.prod.yml      # Продакшен
-├── Dockerfile                   # Многоэтапная сборка
-├── Makefile                     # Команды управления
-├── requirements.txt             # Python зависимости
-└── .env.example                 # Пример переменных окружения
-```
-
-## 🔧 Команды управления
-
-### Настройка и инициализация
-```bash
-make init-project        # 🚀 Интерактивная настройка нового проекта (рекомендуется!)
-make setup               # Создать .env файл из примера  
-make setup-git-macos     # Настроить глобальный .gitignore для macOS
-```
-
-### Разработка
-```bash
-make dev          # Запуск среды разработки
-make dev-d        # Запуск в фоновом режиме
-make dev-tools    # Запуск с инструментами (pgAdmin)
-make stop         # Остановка разработки
-```
-
-### Продакшен
-```bash
-make prod         # Запуск продакшен среды
-make prod-stop    # Остановка продакшена
-make build-prod   # Сборка продакшен образов
-```
-
-### Логи и мониторинг
-```bash
-make logs         # Все логи
-make logs-bot     # Логи бота
-make logs-db      # Логи базы данных
-make logs-redis   # Логи Redis
-```
-
-### Доступ к контейнерам
-```bash
-make shell        # Bash в контейнере бота
-make db-shell     # PostgreSQL консоль
-make redis-shell  # Redis консоль
-```
-
-### Управление сервисами
-```bash
-make restart      # Перезапуск всех сервисов
-make restart-bot  # Перезапуск только бота
-make status       # Статус сервисов
-make health       # Проверка здоровья
-```
-
-### Очистка
-```bash
-make clean        # Очистка контейнеров и образов
-make clean-all    # Полная очистка включая volumes
-make clean-macos  # Очистка macOS артефактов (.DS_Store и др.)
-```
-
-## ⚙️ Конфигурация
-
-Все настройки находятся в файле `.env`:
-
-```env
-# Bot Configuration
-BOT_TOKEN=your_bot_token_here
-BOT_USERNAME=your_bot_username
-
-# Admin Configuration
-ADMIN_USER_IDS=[123456789, 987654321]
-
-# Database Configuration
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-POSTGRES_DB=botdb
-POSTGRES_USER=botuser
-POSTGRES_PASSWORD=securepassword
-
-# Redis Configuration
-REDIS_HOST=redis
-REDIS_PORT=6379
-REDIS_DB=0
-REDIS_PASSWORD=
-
-# Environment
-ENV=development
-
-# Logging
-LOG_LEVEL=INFO
-```
-
-## 🗄️ База данных
-
-### Автоматические миграции
-
-Проект включает систему автоматических миграций базы данных:
-
-- **Автоприменение**: Миграции применяются автоматически при запуске бота
-- **Проверка столбцов**: Система проверяет наличие нужных столбцов перед применением
-- **История миграций**: Ведется журнал примененных миграций
-- **Откат**: Поддержка отката миграций (опционально)
-
-📚 **[Подробная документация по миграциям](docs/MIGRATIONS.md)**
-
-### Работа с миграциями
-
-```bash
-# Создание новой миграции
-make create-migration NAME=add_user_phone DESC="Add phone column to users"
-
-# Применение миграций вручную
-make db-migrate
-
-# Просмотр статуса миграций
-make db-migration-status
-
-# Создание миграции через скрипт
-python scripts/create_migration.py add_user_phone "Add phone column to users"
-```
-
-### Структура миграций
-
-```
-app/database/migrations/
-├── __init__.py              # Экспорт основных классов
-├── base.py                  # Базовый класс Migration
-├── manager.py               # MigrationManager
-└── versions/                # Файлы миграций
-    ├── __init__.py
-    ├── 20241201_000001_initial_tables.py
-    └── 20241201_000002_add_user_columns_example.py
-```
-
-### Автоматические таблицы
-
-При запуске бота автоматически создаются таблицы:
-
-- **users** - пользователи бота (ID, username, имя, дата регистрации)
-- **bot_stats** - статистика бота (количество пользователей, время запуска)
-- **migration_history** - история примененных миграций
-
-### Подключение к PostgreSQL
-
-- **Host**: localhost
-- **Port**: 5432 (или заданный в интерактивной настройке)
-- **Database**: botdb
-- **User**: botuser
-- **Password**: securepassword (измените в .env)
-
-### pgAdmin (при использовании make dev-tools)
-
-- **URL**: http://localhost:8080
-- **Email**: admin@admin.com
-- **Password**: admin
-
-## 🌐 Local Bot API (файлы до 2GB)
-
-По умолчанию Telegram боты ограничены 50MB для загрузки файлов. Local Bot API Server снимает это ограничение.
-
-### Возможности
-
-- 📤 Загрузка файлов до **2000 MB** (вместо 50 MB)
-- 📥 Скачивание файлов **без ограничений** (вместо 20 MB)
-- 🚀 Работа с файлами напрямую через локальный сервер
-
-### Настройка
-
-1. **Получите credentials** на [my.telegram.org](https://my.telegram.org):
-   - Авторизуйтесь с номером телефона
-   - Перейдите в "API development tools"
-   - Создайте приложение и скопируйте `API_ID` и `API_HASH`
-
-2. **Добавьте в `.env`**:
-   ```env
-   USE_LOCAL_API=true
-   TELEGRAM_API_ID=12345678
-   TELEGRAM_API_HASH=abcdef1234567890
-   ```
-
-3. **Запустите с Local API**:
-   ```bash
-   make dev-local      # Запуск в фоне
-   make dev-local-logs # Запуск с логами
-   ```
-
-### Команды управления
-
-```bash
-make dev-local      # Запуск с Local Bot API
-make api-status     # Проверка статуса сервера
-make api-logs       # Просмотр логов
-make api-restart    # Перезапуск сервера
-make stop-local     # Остановка всех сервисов
-```
-
-### Управление через админку
-
-1. Откройте админскую панель: `/admin`
-2. Нажмите **"⚙️ Настройки API"**
-3. Используйте кнопки для просмотра статуса и инструкций по переключению
-
-### Важные замечания
-
-- ⚠️ Переключение режимов требует перезапуска бота
-- 📦 Local API Server требует ~100-200 MB оперативной памяти
-- 💾 Файлы хранятся в Docker volume `telegram_bot_api_data`
-
-## 🎬 Интерактивная настройка
-
-Команда `make init-project` запускает мастер, который собирает:
-
-### 📋 Информацию о проекте:
-- **🤖 Токен бота** (от @BotFather) - обязательно
-- **📛 Username бота** (без @) - обязательно
-- **👨‍💼 ID администраторов** (ваш Telegram ID) - обязательно
-- **📁 Название проекта** (для Docker volumes)
-- **👤 Имя автора**
-- **📝 Описание проекта**
-- **🔐 Пароли для БД**
-- **🌐 Порты** (если стандартные заняты)
-
-### 🔧 И автоматически:
-- ✅ Создает правильный `.env` файл
-- ✅ Обновляет `docker-compose.yml` с новыми портами
-- ✅ Переименовывает Docker volumes под ваш проект
-- ✅ Переименовывает контейнеры под имя бота (например: `my_bot_bot_dev`)
-- ✅ Обновляет метаданные в `app/__init__.py`
-- ✅ Изменяет заголовок в `README.md`
-- ✅ Инициализирует новый Git репозиторий
-- ✅ Делает первый commit с описанием проекта
-- ✅ Очищает macOS артефакты
-
-## 📚 Полезные ссылки
-
-- [Документация Aiogram](https://docs.aiogram.dev/)
-- [Docker Compose](https://docs.docker.com/compose/)
-- [PostgreSQL](https://www.postgresql.org/docs/)
-- [Redis](https://redis.io/documentation)
-- [SQLAlchemy](https://docs.sqlalchemy.org/)
-
-## 🤝 Вклад в проект
-
-1. Fork проекта
-2. Создайте feature branch
-3. Commit изменения
-4. Push в branch
-5. Создайте Pull Request
-
-## 📄 Лицензия
-
-MIT License - см. файл LICENSE для деталей.
+Построен на **aiogram v3**, PostgreSQL, Redis и Docker.
 
 ---
 
-**Создан с ❤️ для разработчиков Telegram ботов**
+## ✨ Что умеет
 
-*Версия: 2.0.0 | Aiogram: v3.20.0 | Дата: 30.06.2025*
+- 🔌 **Telegram Business integration** — подключается к вашему Business-аккаунту через Settings → Business → Chatbots и обрабатывает события `business_connection`, `business_message`, `edited_business_message`, `deleted_business_messages`.
+- 🧠 **AI-ответы от Claude / DeepSeek** — абстракция провайдера с фабрикой по префиксу модели (`claude-*` → Claude, `deepseek-*` → DeepSeek с автоматическим fallback на Claude, если ключ не задан).
+- 🧩 **Prompt caching Claude** — статичная часть системного промпта (base + knowledge) помечается `cache_control: ephemeral`, динамическая (кастомные инструкции владельца) идёт последним блоком.
+- 💬 **Имитация живого человека** — буферизирует входящие сообщения клиента, ждёт 15–25 секунд после последнего, потом показывает typing-индикатор (обновляется каждые 4 сек) пропорционально длине ответа и отправляет **одно** сообщение.
+- 🤐 **Автопауза при ручном ответе владельца** — если вы сами пишете клиенту в чат, бот молчит. Следующее сообщение клиента снова активирует AI.
+- 📬 **Follow-up напоминания** — если клиент не отвечает в течение `FOLLOWUP_DELAY_MINUTES`, бот аккуратно напоминает о себе. Ограничено `FOLLOWUP_MAX_COUNT` попытками.
+- 📚 **Кастомный системный промпт и база знаний на пользователя** — поля `User.system_prompt`, `User.ai_model`, `User.max_history_messages` и таблица `user_knowledge_texts` (плейсхолдер под будущий админ-UI).
+- 💸 **Token-budget-aware context manager** — обрезает историю попарно, уважая `MAX_CONTEXT_TOKENS`, `MAX_KNOWLEDGE_TOKENS`, `MAX_HISTORY_MESSAGES`, считает токены через `tiktoken` (offline).
+- 🐳 **Docker-стэк** — PostgreSQL 15, Redis 7, асинхронный SQLAlchemy 2.0, кастомная система миграций, запуск от непривилегированного пользователя.
+- 👨‍💼 **Админ-панель** — `/admin` для рассылок и базовой статистики (наследство от базового шаблона).
+- 🗂️ **Local Bot API (опционально)** — поддержка файлов до 2 ГБ при включении `USE_LOCAL_API=true`.
+
+---
+
+## 🔄 Как это работает
+
+```
+ ┌─────────┐   business_message   ┌──────────────────┐
+ │ Клиент  ├─────────────────────▶│ Telegram Bot API │
+ └─────────┘                      └────────┬─────────┘
+                                           │
+                                           ▼
+                                 ┌──────────────────┐
+                                 │ BusinessMiddleware│  ← инъекция repo / AI / ctx / buffer
+                                 └────────┬─────────┘
+                                          │
+                                          ▼
+                               ┌────────────────────┐
+                               │ handlers/business/ │  ← различаем owner vs client
+                               └────────┬───────────┘
+                       клиент           │           владелец
+               ┌──────────────┘         │            └───────────┐
+               ▼                        ▼                        ▼
+     HumanResponseService        save assistant         НИЧЕГО НЕ ОТПРАВЛЯЕМ
+     (буфер 15–25 сек,           + reset followup       (владелец сам пишет)
+      потом callback)
+               │
+               ▼
+     ContextManager ── trim history by tokens ──▶  AI Provider (Claude / DeepSeek)
+                                                          │
+                                                          ▼
+                                                  typing_loop + send_message
+                                                  (от имени владельца!)
+                                                          │
+                                                          ▼
+                                             save assistant + schedule followup
+```
+
+Параллельно работает `FollowupScheduler` — фоновая корутина, которая раз в минуту проверяет диалоги, в которых бот писал последним и клиент долго не отвечает, и отправляет ненавязчивое напоминание.
+
+---
+
+## 📋 Требования
+
+- Docker + Docker Compose v2
+- Python 3.11+ (только для скриптов `scripts/init_project.py`, `scripts/deploy.py`)
+- `just` или `make` для удобного управления командами
+- Telegram-аккаунт с включённым **Telegram Business** (требует Telegram Premium)
+- API-ключ Anthropic (`ANTHROPIC_API_KEY`) — обязательно
+- API-ключ DeepSeek (`DEEPSEEK_API_KEY`) — опционально
+
+---
+
+## 🚀 Быстрый старт
+
+### 1. Клонируем и конфигурируем
+
+```bash
+git clone git@github.com:aislam23/assistant_tg_message.git
+cd assistant_tg_message
+cp .env.example .env
+```
+
+Откройте `.env` и заполните минимум:
+
+```env
+BOT_TOKEN=123456:AAA...           # от @BotFather
+BOT_USERNAME=my_assistant_bot     # username бота без @
+ADMIN_USER_IDS=[123456789]        # ваш Telegram ID
+
+POSTGRES_PASSWORD=<сильный_пароль>
+
+ANTHROPIC_API_KEY=sk-ant-...      # обязательно
+CLAUDE_MODEL=claude-sonnet-4-5-20250929
+```
+
+### 2. Запускаем сервисы
+
+```bash
+just dev-d       # или: make dev-d
+just logs-bot    # смотрим логи бота
+```
+
+Миграции применяются автоматически при старте.
+
+### 3. Подключаем бота к Business-аккаунту
+
+1. В Telegram (мобильный или desktop) откройте **Settings → Business → Chatbots**.
+2. Введите username бота (тот, что в `BOT_USERNAME`), **выдайте полные права на чтение и отправку сообщений**.
+3. Бот пришлёт вам приветственное сообщение в приват — это подтверждение, что связка работает.
+
+Теперь любое сообщение от клиента в вашей личке будет обрабатываться ботом.
+
+### 4. Проверяем
+
+1. С другого аккаунта (клиент) отправьте вам 2–3 сообщения подряд.
+2. Подождите 15–25 секунд → появится индикатор «печатает...» → придёт **одно** объединённое сообщение от вашего имени.
+3. Если вы сами напишете клиенту в этот чат, бот замолчит.
+
+---
+
+## ⚙️ Конфигурация
+
+Все настройки — в `.env`. Полный список с дефолтами см. в `.env.example`. Ключевые группы:
+
+### AI
+
+| Переменная | Описание |
+|---|---|
+| `ANTHROPIC_API_KEY` | API-ключ Claude. Обязателен. |
+| `CLAUDE_MODEL` | Модель Claude по умолчанию (`claude-sonnet-4-5-20250929`). |
+| `DEEPSEEK_API_KEY` | API-ключ DeepSeek. Опционально. Если пусто, фабрика откатится на Claude. |
+| `DEEPSEEK_BASE_URL` | Базовый URL DeepSeek API. |
+| `ENABLE_PROMPT_CACHE` | Включить prompt caching Claude для стабильного system-контента (`True`). |
+
+### Контекст
+
+| Переменная | Описание |
+|---|---|
+| `MAX_CONTEXT_TOKENS` | Верхний потолок на весь контекст (`100000`). |
+| `MAX_KNOWLEDGE_TOKENS` | Бюджет под `user_knowledge_texts` в system-блоке (`50000`). |
+| `MAX_HISTORY_MESSAGES` | Максимум сообщений истории, которые идут в LLM (`20`). |
+| `CONTEXT_RESERVE_TOKENS` | Зарезервировано под ответ модели (`4096`). |
+
+### Имитация человеческого ответа
+
+| Переменная | Описание |
+|---|---|
+| `HUMAN_RESPONSE_ENABLED` | Включить буферизацию + typing-loop (`True`). При `False` бот отвечает сразу. |
+| `MIN_RESPONSE_DELAY` / `MAX_RESPONSE_DELAY` | Диапазон случайной задержки перед ответом (`15.0` / `25.0` сек). |
+| `TYPING_CHARS_PER_SECOND` | Скорость «печати» для расчёта длины typing-индикатора (`40`). |
+| `TYPING_MIN_DURATION` / `TYPING_MAX_DURATION` | Clamp на длительность typing (`3.0` / `60.0` сек). |
+
+### Follow-up
+
+| Переменная | Описание |
+|---|---|
+| `FOLLOWUP_ENABLED` | Включить планировщик напоминаний (`True`). |
+| `FOLLOWUP_CHECK_INTERVAL` | Как часто опрашивать БД, сек (`60`). |
+| `FOLLOWUP_DELAY_MINUTES` | Через сколько минут после ответа бота слать напоминание (`60`). |
+| `FOLLOWUP_MAX_COUNT` | Сколько follow-up-ов на один диалог (`1`). |
+
+### Настройки per-user
+
+В таблице `users` можно задать индивидуальные настройки (пока без админ-UI, правьте через SQL):
+
+- `system_prompt TEXT` — кастомные инструкции для AI от владельца (стиль, тон, что говорить/не говорить).
+- `ai_model VARCHAR(64)` — переопределить модель для конкретного владельца (например, `deepseek-chat`).
+- `max_history_messages INTEGER` — локальный override `MAX_HISTORY_MESSAGES`.
+
+Также таблица `user_knowledge_texts` — база знаний владельца (куски текста, которые подгружаются в system-блок Claude). Пока заполняется через SQL, в будущем появится админ-UI.
+
+---
+
+## 🏗️ Архитектура
+
+```
+app/
+├── main.py                          # Bot, Dispatcher, on_startup/on_shutdown
+├── config.py                        # Pydantic Settings
+├── handlers/
+│   ├── __init__.py                  # setup_routers() — business_router первым!
+│   ├── business/                    # 🔥 Telegram Business mode
+│   │   ├── __init__.py              # экспортирует business_router
+│   │   ├── connection.py            # @router.business_connection()
+│   │   └── messages.py              # @router.business_message() + edited/deleted + AI-генерация
+│   ├── admin/                       # админ-панель (рассылки, статус)
+│   ├── start.py, help.py            # базовые команды
+├── middlewares/
+│   ├── __init__.py                  # registers business middleware on business_* events
+│   ├── business.py                  # injects repo, ai factory, context manager, human_response
+│   ├── user.py                      # автосохранение пользователей (только для обычных апдейтов)
+│   └── logging.py
+├── repositories/
+│   └── business_repo.py             # CRUD для business_connections/conversations/messages
+├── services/
+│   ├── ai/
+│   │   ├── base.py                  # BaseAIService, DEFAULT_BASE_PROMPT, tiktoken encoder
+│   │   ├── claude_provider.py       # ClaudeService (anthropic.AsyncAnthropic)
+│   │   ├── deepseek_provider.py     # DeepSeekService (openai.AsyncOpenAI с base_url)
+│   │   └── factory.py               # get_ai_service(model) с fallback
+│   ├── context_manager.py           # prepare_context_with_cache() — блоки Claude, обрезка истории
+│   ├── human_response.py            # буфер 15–25 сек + typing loop (singleton human_response)
+│   ├── followup_scheduler.py        # фоновая корутина, отправляет напоминания
+│   └── broadcast.py                 # рассылки (из базового шаблона)
+├── database/
+│   ├── models.py                    # User (+3 поля), BusinessConnection, Conversation, Message, UserKnowledgeText
+│   ├── database.py                  # db singleton, session_maker, create_tables()
+│   └── migrations/                  # custom migration system
+│       ├── base.py / manager.py
+│       └── versions/
+│           └── 20260416_000001_business_tables.py
+├── states/ + keyboards/ + utils/    # FSM, кнопки, утилиты
+```
+
+**Порядок роутеров имеет значение.** `business_router` подключается **первым** в `setup_routers()`, чтобы `business_message` не перехватывался общим `dp.message` до того, как дойдёт до нашего handler-а.
+
+**UserMiddleware НЕ вешается на business-события** — иначе клиенты владельца попадут в таблицу `users`, что семантически некорректно (мы храним там только владельцев бизнес-аккаунтов).
+
+---
+
+## 🗄️ Схема БД (Business-режим)
+
+| Таблица | Назначение |
+|---|---|
+| `users` | Владельцы бизнес-аккаунтов (+ поля AI). |
+| `business_connections` | Подключения бота к Business-аккаунтам. `connection_id` — unique из Telegram. |
+| `conversations` | Диалоги владельца с конкретными клиентами. UNIQUE `(business_connection_id, client_chat_id)`. Хранит `last_message_at/role`, `next_followup_at`, `followup_count`. |
+| `messages` | История: `role ∈ {user, assistant}`, `content`, `telegram_message_id`, `token_count`. |
+| `user_knowledge_texts` | Куски знаний владельца, уходят в system-промпт AI. |
+
+Ключевые правила:
+- Сообщение от **клиента** → `role='user'`. Запускает буферизацию и AI.
+- Сообщение от **владельца** (вручную или из AI-ответа бота) → `role='assistant'`. Планирует follow-up. На владельца AI не реагирует.
+- Когда клиент отвечает — `next_followup_at` и `followup_count` сбрасываются.
+
+---
+
+## 📦 Команды разработки
+
+Используйте `just` (или эквивалентный `make`).
+
+### Запуск
+
+```bash
+just dev           # старт с логами на переднем плане
+just dev-d         # старт в фоне
+just stop          # остановить
+just restart-bot   # перезапустить только bot
+just logs-bot      # живые логи бота
+just status        # статус контейнеров
+```
+
+### База данных
+
+```bash
+just db-shell                                # psql в контейнер
+just db-migrate                              # применить миграции вручную
+just db-migration-status                     # показать применённые
+just db-backup                               # pg_dump в backup_YYYYMMDD.sql
+just create-migration add_something "desc"   # создать новый файл миграции
+```
+
+### Отладка
+
+```bash
+just shell         # bash в контейнере бота
+just logs          # все сервисы
+just logs-db       # postgres
+just test          # pytest внутри контейнера (если тесты есть)
+```
+
+### Продакшен
+
+```bash
+just setup-prod    # создать .env.prod из .env.prod.example
+just prod          # запуск prod-стэка (требует .env.prod)
+just prod-stop
+just prod-deploy   # scripts/deploy.py
+```
+
+### Local Bot API (файлы до 2 ГБ)
+
+```bash
+just dev-local     # старт с Local Bot API Server
+just api-status    # проверить, жив ли сервер
+just api-logs
+just stop-local
+```
+
+Полный список: `just --list`.
+
+---
+
+## 🗃️ Миграции
+
+Своя минималистичная система миграций (без Alembic).
+
+- Файлы: `app/database/migrations/versions/YYYYMMDD_NNNNNN_*.py`
+- Каждый файл — класс, наследующий `Migration`, с методами `get_version()`, `get_description()`, `check_can_apply()`, `upgrade()`, `downgrade()`.
+- `MigrationManager` обнаруживает их автоматически и применяет по возрастанию версии.
+- История ведётся в таблице `migration_history`.
+
+Создать новую миграцию:
+
+```bash
+just create-migration add_client_tags "Add tags column to conversations"
+```
+
+Подробности: [docs/MIGRATIONS.md](docs/MIGRATIONS.md).
+
+---
+
+## 🧩 Настройка персонального поведения
+
+Пока без UI — прямо через SQL:
+
+```sql
+-- задать кастомный промпт владельцу
+UPDATE users
+SET system_prompt = 'Ты — владелец студии Foo. Отвечай коротко, предлагай созвон при сложных вопросах.'
+WHERE id = 123456789;
+
+-- переключить на DeepSeek
+UPDATE users SET ai_model = 'deepseek-chat' WHERE id = 123456789;
+
+-- добавить тексты в базу знаний владельца
+INSERT INTO user_knowledge_texts (user_id, content, order_index)
+VALUES
+  (123456789, 'Прайс: консультация 5000₽, проект от 50 000₽.', 1),
+  (123456789, 'Мы не работаем с криптой и играми.',              2);
+```
+
+---
+
+## 🛠️ Основной стэк
+
+- [aiogram v3.20](https://docs.aiogram.dev/) — Telegram Bot framework
+- [anthropic](https://github.com/anthropics/anthropic-sdk-python) — Claude API клиент
+- [openai](https://github.com/openai/openai-python) — используется для DeepSeek через `base_url`
+- [tiktoken](https://github.com/openai/tiktoken) — offline подсчёт токенов
+- [SQLAlchemy 2.0](https://docs.sqlalchemy.org/) (async) + asyncpg + PostgreSQL 15
+- [Redis 7](https://redis.io/) — FSM-хранилище aiogram
+- [pydantic 2](https://docs.pydantic.dev/) + [pydantic-settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/) — конфигурация
+- [loguru](https://github.com/Delgan/loguru) — логирование
+
+---
+
+## 🧪 Сценарий ручной проверки
+
+1. `just dev-d`, `just logs-bot` — увидеть `✅ Follow-up scheduler started`.
+2. Подключить бота в Business-настройках Telegram с полными правами — в логах появится `✅ Business подключение включено: ...`, в чате с ботом — приветственное сообщение.
+3. С клиентского аккаунта отправить 3 сообщения подряд с интервалом ~1 сек.
+4. Через 15–25 сек → индикатор «печатает...» → одно объединённое сообщение от имени владельца.
+5. Посмотреть в БД:
+   ```bash
+   just db-shell
+   SELECT role, content FROM messages ORDER BY created_at;
+   SELECT * FROM conversations;
+   ```
+6. Отвечать клиентом самостоятельно из владельческого аккаунта → в `conversations` появится запись с `last_message_role='assistant'`, followup запланирован.
+7. Клиент отвечает → followup сброшен, AI снова включается.
+8. Для проверки follow-up: `FOLLOWUP_DELAY_MINUTES=2`, `FOLLOWUP_CHECK_INTERVAL=30`, `just restart-bot` → через пару минут прилетает напоминание.
+
+---
+
+## 🔐 Безопасность
+
+- `.env` и `.env.prod` всегда в `.gitignore`. Проверяется при каждом коммите.
+- Docker-контейнер бота запускается от непривилегированного пользователя.
+- Токены Telegram, ключи AI и пароли БД живут только в `.env*`, в репозиторий попадают только `*.example` с плейсхолдерами.
+- Prompt caching Claude хранит только system-контент (не диалоги клиентов).
+
+---
+
+## 📄 Лицензия
+
+MIT.
+
+---
+
+Основано на шаблоне [aiogram_starter_kit](https://github.com/aislam23/aiogram_starter_kit). Telegram Business mode, AI-провайдеры, буферизация и follow-up-планировщик — дополнительный слой поверх этой базы.
